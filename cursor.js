@@ -1,98 +1,131 @@
 // Custom Cursor - Circle with Dot
 (function() {
+  // Debug: log that cursor script is running
+  console.log('Cursor script loaded');
+  
   // Only initialize on devices with fine pointer (mouse)
   if (window.matchMedia('(pointer: coarse)').matches) {
+    console.log('Touch device detected - cursor disabled');
     return;
   }
+  console.log('Mouse device detected - cursor enabled');
 
-  // Create cursor elements
-  const cursor = document.createElement('div');
-  cursor.className = 'custom-cursor';
-  
-  const circle = document.createElement('div');
-  circle.className = 'cursor-circle';
-  
-  const dot = document.createElement('div');
-  dot.className = 'cursor-dot';
-  
-  cursor.appendChild(circle);
-  cursor.appendChild(dot);
-  document.body.appendChild(cursor);
-
-  let mouseX = 0;
-  let mouseY = 0;
-  let circleX = 0;
-  let circleY = 0;
-  let dotX = 0;
-  let dotY = 0;
-
-  // Track mouse position
-  document.addEventListener('mousemove', (e) => {
-    mouseX = e.clientX;
-    mouseY = e.clientY;
-  }, { passive: true });
-
-  // Animation loop for smooth following
-  function animate() {
-    // Circle follows with slight delay (smooth lag)
-    circleX += (mouseX - circleX) * 0.15;
-    circleY += (mouseY - circleY) * 0.15;
+  try {
+    // Create cursor elements directly with fixed positioning
+    const circle = document.createElement('div');
+    circle.id = 'cursor-circle';
+    circle.style.cssText = `
+      position: fixed !important;
+      width: 40px !important;
+      height: 40px !important;
+      border: 2px solid #00daf3 !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 999999 !important;
+      transform: translate(-50%, -50%) !important;
+      transition: width 0.15s ease, height 0.15s ease, background-color 0.2s ease !important;
+      background-color: transparent !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    `;
     
-    // Dot follows instantly
-    dotX = mouseX;
-    dotY = mouseY;
+    const dot = document.createElement('div');
+    dot.id = 'cursor-dot';
+    dot.style.cssText = `
+      position: fixed !important;
+      width: 6px !important;
+      height: 6px !important;
+      background-color: #00daf3 !important;
+      border-radius: 50% !important;
+      pointer-events: none !important;
+      z-index: 999999 !important;
+      transform: translate(-50%, -50%) !important;
+      display: block !important;
+      visibility: visible !important;
+      opacity: 1 !important;
+    `;
 
-    circle.style.left = circleX + 'px';
-    circle.style.top = circleY + 'px';
-    dot.style.left = dotX + 'px';
-    dot.style.top = dotY + 'px';
+    // Wait for DOM to be ready
+    function initCursor() {
+      document.body.appendChild(circle);
+      document.body.appendChild(dot);
+      console.log('Cursor elements added to DOM');
 
-    requestAnimationFrame(animate);
-  }
-  animate();
+      let mouseX = window.innerWidth / 2;
+      let mouseY = window.innerHeight / 2;
+      let circleX = mouseX;
+      let circleY = mouseY;
 
-  // Handle mouse down (click)
-  document.addEventListener('mousedown', () => {
-    cursor.classList.add('cursor-click');
-  });
+      // Track mouse position
+      document.addEventListener('mousemove', function(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        
+        // Update dot position immediately
+        dot.style.left = mouseX + 'px';
+        dot.style.top = mouseY + 'px';
+      }, { passive: true });
 
-  document.addEventListener('mouseup', () => {
-    cursor.classList.remove('cursor-click');
-  });
+      // Animation loop for smooth circle following
+      let animationId;
+      function animate() {
+        // Circle follows with slight delay (smooth lag)
+        circleX += (mouseX - circleX) * 0.15;
+        circleY += (mouseY - circleY) * 0.15;
 
-  // Handle hover on interactive elements
-  const interactiveElements = document.querySelectorAll('a, button, .btn, input, textarea, select, [role="button"]');
-  
-  interactiveElements.forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      cursor.classList.add('cursor-hover');
-    });
-    el.addEventListener('mouseleave', () => {
-      cursor.classList.remove('cursor-hover');
-    });
-  });
+        circle.style.left = circleX + 'px';
+        circle.style.top = circleY + 'px';
 
-  // Handle dynamically added elements
-  document.addEventListener('mouseover', (e) => {
-    const target = e.target;
-    if (target.closest('a, button, .btn, input, textarea, select, [role="button"]')) {
-      cursor.classList.add('cursor-hover');
+        animationId = requestAnimationFrame(animate);
+      }
+      animate();
+
+      // Handle mouse down (click)
+      document.addEventListener('mousedown', function() {
+        circle.style.width = '30px';
+        circle.style.height = '30px';
+      });
+
+      document.addEventListener('mouseup', function() {
+        circle.style.width = '40px';
+        circle.style.height = '40px';
+      });
+
+      // Handle hover on interactive elements
+      const interactiveElements = document.querySelectorAll('a, button, .btn, input, textarea, select, [role="button"], label');
+      interactiveElements.forEach(function(el) {
+        el.addEventListener('mouseenter', function() {
+          circle.style.width = '60px';
+          circle.style.height = '60px';
+          circle.style.backgroundColor = 'rgba(0, 218, 243, 0.1)';
+        });
+        el.addEventListener('mouseleave', function() {
+          circle.style.width = '40px';
+          circle.style.height = '40px';
+          circle.style.backgroundColor = 'transparent';
+        });
+      });
+
+      // Handle visibility change (pause when tab hidden)
+      document.addEventListener('visibilitychange', function() {
+        if (document.hidden) {
+          circle.style.opacity = '0';
+          dot.style.opacity = '0';
+        } else {
+          circle.style.opacity = '1';
+          dot.style.opacity = '1';
+        }
+      });
     }
-  });
 
-  document.addEventListener('mouseout', (e) => {
-    const target = e.target;
-    if (target.closest('a, button, .btn, input, textarea, select, [role="button"]')) {
-      cursor.classList.remove('cursor-hover');
-    }
-  });
-
-  // Handle visibility change (pause when tab hidden)
-  document.addEventListener('visibilitychange', () => {
-    if (document.hidden) {
-      cursor.style.opacity = '0';
+    // Initialize immediately if DOM is ready, otherwise wait
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initCursor);
     } else {
-      cursor.style.opacity = '1';
+      initCursor();
     }
-  });
+  } catch (error) {
+    console.error('Cursor initialization error:', error);
+  }
 })();
