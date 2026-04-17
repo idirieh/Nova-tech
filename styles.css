@@ -768,14 +768,33 @@ h4 { font-size: clamp(1.25rem, 2vw, 1.5rem); }
   .nav-links.mobile-open {
     display: flex;
     flex-direction: column;
-    position: absolute;
-    top: 100%;
+    position: fixed;
+    top: 0;
     left: 0;
     right: 0;
+    bottom: 0;
     background: var(--surface);
     padding: var(--space-lg);
     gap: var(--space-sm);
-    border-bottom: 1px solid rgba(0, 218, 243, 0.1);
+    padding-top: 80px;
+    z-index: 999;
+  }
+
+  .nav-cta-mobile {
+    display: block;
+    margin-top: auto;
+    text-align: center;
+    width: 100%;
+  }
+
+  .nav-cta {
+    display: none;
+  }
+}
+
+@media (min-width: 768px) {
+  .nav-cta-mobile {
+    display: none;
   }
 }
 

@@ -20,6 +20,7 @@
         <a href="about.html">About Us</a>
         <a href="#">Case Studies</a>
         <a href="contact.html">Inquiry</a>
+        <a href="contact.html" class="btn btn-primary nav-cta-mobile">Get Started</a>
       </nav>
       <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">
         <span class="material-symbols-outlined">menu</span>
@@ -201,6 +202,12 @@
   <script>
     document.getElementById('navToggle').addEventListener('click', function() {
       document.querySelector('.nav-links').classList.toggle('mobile-open');
+    });
+
+    document.querySelectorAll('.nav-links a').forEach(link => {
+      link.addEventListener('click', () => {
+        document.querySelector('.nav-links').classList.remove('mobile-open');
+      });
     });
   </script>
 
