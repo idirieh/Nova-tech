@@ -16,6 +16,7 @@
         Nova Tech
       </a>
       <nav class="nav-links">
+        <a href="index.html">Home</a>
         <a href="services.html">Services</a>
         <a href="about.html" class="active">About Us</a>
         <a href="#">Case Studies</a>
@@ -157,13 +158,19 @@
 
   <script src="cursor.js"></script>
   <script>
-    document.getElementById('navToggle').addEventListener('click', function() {
-      document.querySelector('.nav-links').classList.toggle('mobile-open');
+    const navToggle = document.getElementById('navToggle');
+    const navLinks = document.querySelector('.nav-links');
+    const menuIcon = navToggle.querySelector('.material-symbols-outlined');
+
+    navToggle.addEventListener('click', function() {
+      const isOpen = navLinks.classList.toggle('mobile-open');
+      menuIcon.textContent = isOpen ? 'close' : 'menu';
     });
 
     document.querySelectorAll('.nav-links a').forEach(link => {
       link.addEventListener('click', () => {
-        document.querySelector('.nav-links').classList.remove('mobile-open');
+        navLinks.classList.remove('mobile-open');
+        menuIcon.textContent = 'menu';
       });
     });
   </script>
